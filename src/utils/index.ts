@@ -11,7 +11,7 @@ const showTime = () => {
     nowTime.value = `${hours}:${minu}:${sec}`
     timer = setTimeout(showTime, 1000)
 }
-const resetTime = () =>{
+const resetTime = () => {
     nowTime.value = '00:00:00'
     clearTimeout(timer)
 }

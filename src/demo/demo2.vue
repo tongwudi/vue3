@@ -46,19 +46,19 @@
   toRaw：返回由 reactive 或 readonly 方法转换成响应式代理的普通对象。
 
   注意项：
-      1. ref 函数只能监听简单类型的变化，不能监听复杂数据类型（object/array）的变化. 
-      2. 在组合 API 中定义的变量/方法，要想在外界使用，必须通过 return 暴露出去。
-      3. 在 vue2.x 中响应式是通过 defineProperty 来实现的，而在 vue3.0中响应式数据是通过 ES6 的 Proxy 来实现的。
-      4. reactive 的参数必须是对象（json/arr），如果传递了其他对象，界面数据则不会自动更新，无法实现响应式。
-      5. toRaw 是一个还原方法，可用于临时读取，访问不会被代理/跟踪，写入时也不会触发更改。不建议一直持有原始对象的引用。请谨慎使用。
+    1. 在 vue2.x 中响应式是通过 defineProperty 来实现的，而在 vue3.0中响应式数据是通过 ES6 的 Proxy 来实现的。
+    2. ref 只能监听简单类型的变化，不能监听复杂数据类型（object/array）的变化. 
+    3. reactive 的参数必须是对象（json/arr），如果传递了其他对象，界面数据则不会自动更新，无法实现响应式。
+    4. toRaw 是一个还原方法，可用于临时读取，访问不会被代理/跟踪，写入时也不会触发更改。不建议一直持有原始对象的引用。请谨慎使用。
+    5. 在组合 API 中定义的变量/方法，要想在外界使用，必须通过 return 暴露出去。
   */
-import { ref, toRefs, reactive, toRaw } from "vue";
-import useStuFunc from "./demo2";
+import { ref, reactive, toRaw, onMounted, toRefs } from "vue";
+import { demo2Data } from "./demo2";
 
 export default {
   setup() {
-    const count = ref(0);
     /* ref(0) 相当于 reactive({ value: 0 }) */
+    const count = ref(0);
     function addCount() {
       count.value += 1;
     }
@@ -96,9 +96,16 @@ export default {
       console.log(obj3);
     }
 
-    const { data } = useStuFunc();
+    onMounted(() => {
+      console.log("子组件挂载");
+      demo2Data.stus.push({
+        id: 5,
+        name: "zl",
+        age: 36,
+      });
+    });
 
-    const refData = toRefs(data);
+    const refData = toRefs(demo2Data);
 
     return {
       count,
