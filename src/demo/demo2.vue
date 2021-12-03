@@ -1,7 +1,22 @@
 <template>
   <div>
-    <div>money：{{ moneyUSD }}</div>
+    <h1>我是demo2</h1>
+
+    <div>money 【{{ moneyUSD }}】</div>
+    <div>count 【{{ usdFn(count) }}】</div>
+    <br />
+
+    <div>basicStr 【{{ basicStr }}】</div>
+    <div>basicNum 【{{ basicNum }}】</div>
+    <div>basicArr 【{{ basicArr }}】</div>
+    <button @click="addFn">增加</button>
+
     <hr />
+    
+    <div>basicObj 【{{ basicObj }}】</div>
+    <div>refObj 【{{ refObj }}】</div>
+    <div>rawObj 【{{ rawObj }}】</div>
+    <button @click="modFn">修改</button>
 
     <form @submit="addStu">
       <label>
@@ -24,51 +39,28 @@
         <button @click="delStu(index)">删除</button>
       </li>
     </ul>
-    <hr />
-
-    <!-- <p>{{ str }}</p> -->
-    <p>{{ arr }}</p>
-    <button @click="demo1">示例1</button>
-    <hr />
-
-    <p>{{ obj2 }}</p>
-    <button @click="demo2">示例2</button>
   </div>
 </template>
 
 <script>
 /* 
-  setup：是组合API的入口函数，他有两个参数 props 和 context(emit、slots、attrs)
   reactive：将传入的数据包装成一个 Proxy 对象。
   ref：定义一个响应式且可改变的 ref 对象，ref 对象拥有一个指向内部值的单一属性 .value。
   readonly：返回一个只读代理，即使是对象里面的对象，也是 readonly 的。
-  toRaw：返回由 reactive 或 readonly 方法转换成响应式代理的普通对象。
 
   注意项：
     1. 在 vue2.x 中响应式是通过 defineProperty 来实现的，而在 vue3.0 中响应式数据是通过 ES6 的 Proxy 来实现的。
-    2. 无论是 Object.defineProperty 还是 proxy，只能对 对象数据 保持响应式。所以在 ref 中，基本类型数据变成了对象，使用 value 来获取值。
+    2. 无论是 Object.defineProperty 还是 Proxy，只能对 对象数据 保持响应式。所以在 ref 中，基本类型数据变成了对象，使用 .value 来获取值。
     3. ref 只能监听简单类型的变化，不能监听复杂数据类型（object/array）的变化. 
-    4. reactive 的参数必须是对象（json/arr），如果传递了其他类型，界面数据则不会自动更新，无法实现响应式。
-    5. 使用 ES6 解构会消除 props 和 reactive 的响应性。如果需要解构 props 或 reactive，可以使用 toRefs 或 toRef。
     6. 当 reactive 内部的值仍然是一个对象的话，那么解构或者展开后依旧保持响应，这是内部处理了深度响应的结果。
-    7. 如果 props 中的属性没有使用，则无法获取到该属性，需要通过 toRef 创建一个 ref。
-    8. toRaw 是一个还原方法，可用于临时读取，访问不会被代理/跟踪，写入时也不会触发更改。不建议一直持有原始对象的引用。请谨慎使用。
     9. 在组合 API 中定义的变量/方法，要想在外界使用，必须通过 return 暴露出去。
     10. 从 setup 暴露出去的数据在模板中访问时是被自动浅解包的，因此不需要在模板中使用 .value。
 
     1. computed 返回的值就和 ref 一样，都是需要使用 .value 获取。
     2. watch 可以监听一个值，也可以同时监听多个值。
 
-    当使用组合式 API 时，reactive refs 和 template refs 的概念已经是统一的。
   */
-import {
-  reactive,
-  toRef,
-  toRefs,
-  toRaw,
-  computed,
-  // onMounted,
-} from "vue";
+import { reactive, toRef, toRefs, toRaw, computed } from "vue";
 import useStuFunc from "./useStuFunc";
 
 export default {
@@ -77,60 +69,77 @@ export default {
       type: Number,
       default: 15,
     },
-    title: {
-      type: String,
-      default: "zhangsan",
+    count: {
+      type: Number,
+      default: 10,
     },
   },
-  setup(props, { emit }) {
-    console.log(props);
-    console.log(emit); // 触发事件 (方法，等同于 $emit)
 
-    const title = toRef(props, "title");
-    // const { money } = toRefs(props);
-    // console.log(money.value);
-    console.log(title.value);
+  /*
+    setup 是组合API的入口函数，他有两个参数 props 和 context(emit、slots、attrs)
+    */
+  setup(props, context) {
+    console.log("context=>", context);
+    // const { emit, slots, attrs } = context
+    // console.log(emit); // 等同于 $emit
+    // console.log(slots); // 等同于 $slots
+    // console.log(attrs); // 等同于 $attrs
 
+    /* 
+      解构会消除 props 和 reactive 的响应性。如果需要解构 props 或 reactive，可以使用 toRefs 或 toRef。
+      */
+    const { money } = toRefs(props);
+    const count = toRef(props, "count");
+    console.log("money=>", money.value); // 父页面重新赋过值
+    console.log("count=>", count.value); // 父页面未重新赋值
+
+    /* 
+      vue3.0 移除了 filters 过滤器，可以使用 方法调用 或 计算属性 替代实现。
+      */
     const moneyUSD = computed(() => {
-      // return '$' + money.value
-      return "$" + props.money;
+      return "$" + money.value;
     });
     // 或者
-    // const moneyFilters = (money) => {
-    //   return '$' + money
-    // }
+    const usdFn = (count) => {
+      return "$" + count;
+    };
 
-    /* 示例1 */
-    // let str = reactive("123"); // 不能响应式
-    // let str = reactive(456); // 不能响应式
-    const arr = reactive([1, 2, 3]);
+    /*
+      reactive 的参数必须是对象（json/arr），如果传递了其他类型，界面数据则不会自动更新，无法实现响应式。 
+      */
+    let basicStr = reactive("abc");
+    let basicNum = reactive(200);
+    const basicArr = reactive([1, 2, 3]);
 
-    function demo1() {
-      // const flag = str
-      // const num = flag - 5;
-      // str = num
-      // console.log(str);
-      if (arr.includes(4)) return;
-      arr.push(4);
-      console.log(arr);
-    }
+    const addFn = () => {
+      basicStr += "d";
+      basicNum += 100;
+      basicArr.push(4);
+      console.log("basicStr=>", basicStr); // 界面没有更新
+      console.log("basicNum=>", basicNum); // 界面没有更新
+      console.log("basicArr=>", basicArr); // 界面更新
 
-    /* 示例2 */
-    const obj1 = { a: 111, b: 222 };
-    const obj2 = reactive(obj1);
-    const obj3 = toRaw(obj2);
+    };
 
-    console.log(obj1 === obj2); // false
-    /* obj1 和 obj2 不是同一个数组，他们是引用关系，obj2 的本质是一个 proxy 对象，在这个 proxy 对象中引用了 obj2  */
-    console.log(obj1 === obj3); // true
+    /* 
+      直接修改原生对象无法触发界面更新，只有通过 响应式 之后的对象来修改，才会触发界面更新。
+      toRaw 将响应式对象还原成普通对象，可用于临时读取。但不建议一直持有原始对象的引用，谨慎使用。
+      */
+    const basicObj = { a: 111 };
+    const refObj = reactive(basicObj);
+    const rawObj = toRaw(refObj);
 
-    function demo2() {
-      // obj1.a = 333; // 如果直接修改obj1，无法触发界面更新
-      obj2.a = 333; // 只有通过包装之后的对象来修改，才会触发界面更新
-      // obj3.a = 333;
-      console.log(obj1);
-      console.log(obj2);
-      console.log(obj3);
+    // basicObj 和 refObj 不是同一个数组，他们是引用关系。
+    console.log(basicObj === refObj); // false
+    console.log(basicObj === rawObj); // true
+
+    function modFn() {
+      // basicObj.a = 333; // 界面没有更新
+      // refObj.a = 333; // 界面更新
+      rawObj.a = 333; // 界面没有更新
+      console.log(basicObj);
+      console.log(refObj);
+      console.log(rawObj);
     }
 
     const { demo2Data } = useStuFunc();
@@ -139,11 +148,15 @@ export default {
 
     return {
       moneyUSD,
-      // str,
-      arr,
-      obj2,
-      demo1,
-      demo2,
+      usdFn,
+      basicStr,
+      basicNum,
+      basicArr,
+      addFn,
+      basicObj,
+      refObj,
+      rawObj,
+      modFn,
       ...refData,
     };
   },
