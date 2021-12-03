@@ -15,9 +15,14 @@
   <div>您选择了【{{ selectGirl }}】为您服务</div>
   <button @click="overClick">点餐完毕</button>
   <p>{{ overText }}</p>
+  <hr />
 
-  <hr>
-  <demo2 />
+  <button @click="addCount">增加</button>
+  <div>sum：{{ sum }}</div>
+
+  <hr />
+
+  <demo2 :money="counter" />
 </template>
 
 <script lang="ts">
@@ -29,8 +34,10 @@ import {
   // onRenderTriggered,
   // onUnmounted,
   reactive,
+  ref,
   toRefs,
   watch,
+  computed,
 } from "vue";
 import { nowTime, showTime, resetTime } from "./utils";
 import demo2 from "./demo/demo2.vue";
@@ -38,10 +45,22 @@ import demo2 from "./demo/demo2.vue";
 export default defineComponent({
   name: "App",
   components: {
-    demo2
+    demo2,
   },
   setup() {
     console.log("父组件初始化");
+
+    /* ref(0) 相当于 reactive({ value: 0 }) */
+    const counter = ref(0);
+    function addCount() {
+      counter.value++;
+    }
+    watch(counter, (newVal, oldVal) => {
+      console.log("The new counter value is: " + newVal);
+      console.log("The old counter value is: " + oldVal);
+    });
+
+    const sum = computed(() => counter.value * 3);
 
     const data = reactive({
       title: "欢迎光临红浪漫，请选择一位美女为您服务",
@@ -49,13 +68,13 @@ export default defineComponent({
       overText: "",
       girls: ["英子", "大脚", "晓红"],
       selectGirlFunc: (index: number) => {
-        data.selectGirl = data.girls[index]
+        data.selectGirl = data.girls[index];
       },
       overClick: () => {
-        if (!data.selectGirl) return
-        data.overText = "点餐完成-" + data.selectGirl
-      }
-    })
+        if (!data.selectGirl) return;
+        data.overText = "点餐完成-" + data.selectGirl;
+      },
+    });
 
     // onRenderTracked((e) => {
     //     console.log("渲染跟踪", e)
@@ -66,8 +85,8 @@ export default defineComponent({
     // })
 
     onMounted(() => {
-      console.log("父组件挂载")
-    })
+      console.log("父组件挂载");
+    });
 
     // onUpdated(() => {
     //   console.log("父组件更新时")
@@ -79,23 +98,28 @@ export default defineComponent({
 
     watch(
       () => {
-        return [data.overText, data.selectGirl]
+        // getter
+        return [data.overText, data.selectGirl];
       },
       (newVal) => {
-        document.title = newVal[0]
+        // setter
+        document.title = newVal[0];
       }
-    )
+    );
 
-    const refData = toRefs(data)
+    const refData = toRefs(data);
 
     return {
+      counter,
+      sum,
+      addCount,
       nowTime,
       showTime,
       resetTime,
       ...refData,
-    }
-  }
-})
+    };
+  },
+});
 </script>
 
 <style>
