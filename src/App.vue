@@ -22,7 +22,7 @@
 
   <hr />
 
-  <demo2 :money="counter" />
+  <demo2 :money="counter" @add="add" />
 </template>
 
 <script lang="ts">
@@ -76,6 +76,10 @@ export default defineComponent({
       },
     });
 
+    const add = (stu: object) => {
+      console.log("stu=>", stu);
+    };
+
     // onRenderTracked((e) => {
     //     console.log("渲染跟踪", e)
     // })
@@ -110,12 +114,13 @@ export default defineComponent({
     const refData = toRefs(data);
 
     return {
-      counter,
-      sum,
-      addCount,
       nowTime,
       showTime,
       resetTime,
+      sum,
+      addCount,
+      counter,
+      add,
       ...refData,
     };
   },
