@@ -30,7 +30,5 @@ export default (context) => {
 		});
 	});
 
-	return {
-		useStuData
-	}
+	return useStuData
 }
