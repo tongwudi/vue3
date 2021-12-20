@@ -11,12 +11,12 @@
     <div>basicArr 【{{ basicArr }}】</div>
     <button @click="addFn">增加</button>
 
-    <hr />
-
     <div>basicObj 【{{ basicObj }}】</div>
     <div>refObj 【{{ refObj }}】</div>
     <div>rawObj 【{{ rawObj }}】</div>
     <button @click="modFn">修改</button>
+
+    <hr />
 
     <form @submit="addStu">
       <label>
@@ -142,16 +142,16 @@ export default {
     /* 
       watch 可以监听一个值，也可以同时监听多个值。
     */
+    // 监听用 ref 声明的数据源
     watch(moneyUSD, (newVal, oldVal) => {
       console.log("The new moneyUSD value is: " + newVal);
       console.log("The old moneyUSD value is: " + oldVal);
       document.title = newVal;
     });
     // 或者
+    // 监听用 reactive 声明的数据源
     // watch(
-    //   // getter
     //   () => moneyUSD.value,
-    //   // setter
     //   (newVal) => (document.title = newVal)
     // );
 

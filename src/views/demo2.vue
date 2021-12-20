@@ -14,6 +14,7 @@
 
 <script>
 import { ref, reactive } from "vue";
+
 export default {
   setup() {
     const title = ref("欢迎光临红浪漫，请选择一位美女为您服务");
