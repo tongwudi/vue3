@@ -6,7 +6,7 @@
   <teleport to="#app">
     <div v-if="modalOpen" class="modal">
       <div>
-        I'm a modal!
+        I'm a mod11al!
         <button @click="modalOpen = false">Close</button>
       </div>
     </div>
