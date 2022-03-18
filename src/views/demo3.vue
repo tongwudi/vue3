@@ -6,10 +6,15 @@
 </template>
 
 <script>
-import { onMounted, ref, computed } from "vue";
+import {
+  defineComponent,
+  onMounted,
+  ref,
+  computed,
+} from "vue";
 import demo2 from "../demo/demo2.vue";
 
-export default {
+export default defineComponent({
   components: {
     demo2,
   },
@@ -36,7 +41,7 @@ export default {
     // })
 
     onMounted(() => {
-      console.log("父组件挂载后");
+      console.log("父组件挂载");
     });
 
     // onUpdated(() => {
@@ -48,11 +53,11 @@ export default {
     // })
 
     return {
-      addCount,
       sum,
+      addCount,
       counter,
       add,
     };
   },
-};
+});
 </script>
